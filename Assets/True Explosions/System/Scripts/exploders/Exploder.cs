@@ -11,30 +11,9 @@ public class Exploder : MonoBehaviour {
 	public int probeCount = 150;
 	public float explodeDuration = 0.5f;
 
+	private float timeTillExplosion;
+
 	protected bool exploded = false;
-	
-	public virtual IEnumerator explode() {
-		ExploderComponent[] components = GetComponents<ExploderComponent>(); 
-		foreach (ExploderComponent component in components) {
-			if (component.enabled) {
-				component.onExplosionStarted(this);
-			}
-		}		
-		while (explodeDuration > Time.time - explosionTime) {
-			disableCollider();
-			for (int i = 0; i < probeCount; i++) {
-				shootFromCurrentPosition();
-			}
-			enableCollider();
-			yield return new WaitForFixedUpdate();
-		}
-	}
-	
-	protected virtual void shootFromCurrentPosition() {
-		Vector3 probeDir = Random.onUnitSphere;
-		Ray testRay = new Ray(transform.position, probeDir);
-		shootRay(testRay, radius);
-	}
 
 	protected bool wasTrigger;
 	public virtual void disableCollider() {
@@ -51,26 +30,67 @@ public class Exploder : MonoBehaviour {
 	}
 
 	
-	protected virtual void init() {
+	public virtual void init() {
 		power *= 500000;
-		
+		exploded = false;
 		if (randomizeExplosionTime > 0.01f) {
 			explosionTime += Random.Range(0.0f, randomizeExplosionTime);
 		}
+
+		timeTillExplosion = explosionTime;
 	}
 	Collider capsule;
 	void Start() {
 		init();
 		capsule = GetComponent<Collider> ();
 	}
+	void Update()
+	{
+		
 
+	}
 	void FixedUpdate() {
-		if (Time.time > explosionTime && !exploded) {
+
+		CountDownTimeToExplosion ();
+
+
+		if (timeTillExplosion <= 0.0f && !exploded) {
+			
 			exploded = true;
+			Debug.Log ("boolean exploded: " + exploded);
 			StartCoroutine("explode");
-			capsule.enabled = !capsule.enabled;
-			Destroy (gameObject, 3f);
+			Destroy (gameObject, 30f);
 		}
+	}
+
+	private void CountDownTimeToExplosion()
+	{
+		timeTillExplosion -= Time.deltaTime;
+	}
+
+	public virtual IEnumerator explode() {
+		Debug.Log ("Boom!");
+
+		ExploderComponent[] components = GetComponents<ExploderComponent>(); 
+		foreach (ExploderComponent component in components) {
+			if (component.enabled) {
+				component.onExplosionStarted(this);
+			}
+		}		
+		while (explodeDuration > Time.time - explosionTime) {
+			disableCollider();
+			for (int i = 0; i < probeCount; i++) {
+				shootFromCurrentPosition();
+			}
+			enableCollider();
+			yield return new WaitForFixedUpdate();
+		}
+	}
+
+	protected virtual void shootFromCurrentPosition() {
+		Vector3 probeDir = Random.onUnitSphere;
+		Ray testRay = new Ray(transform.position, probeDir);
+		shootRay(testRay, radius);
 	}
 
 	private void shootRay(Ray testRay, float estimatedRadius) {
@@ -88,5 +108,9 @@ public class Exploder : MonoBehaviour {
 				shootRay(emittedRay, estimatedRadius - hit.distance);
 			}
 		}
+	}
+
+	void Damage() {
+		
 	}
 }

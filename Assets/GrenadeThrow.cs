@@ -14,7 +14,8 @@ public class GrenadeThrow : MonoBehaviour {
 	}
 	void ThrowGrenade() {
 		GameObject grenadethrow = Instantiate (grenade, transform.position, transform.rotation);
-
+			
+		grenadethrow.GetComponent<Exploder> ().init();
 			Rigidbody rb = grenadethrow.GetComponent<Rigidbody> ();
 			rb.AddForce (transform.forward * throwForce, ForceMode.VelocityChange);
 
