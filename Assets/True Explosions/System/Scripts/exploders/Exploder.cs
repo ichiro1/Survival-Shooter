@@ -4,16 +4,21 @@ using System.Collections;
 
 public class Exploder : MonoBehaviour {
 
+	Vector3 velocity = new Vector3 (0.0f,1.0f,0.0f);
 	public float explosionTime = 0;
 	public float randomizeExplosionTime = 0;
 	public float radius = 15;
 	public float power = 1;
 	public int probeCount = 150;
 	public float explodeDuration = 0.5f;
+	public float sinkSpeed = 2.5f;
+
+	public LayerMask hitLayers;
 
 	private float timeTillExplosion;
 
 	protected bool exploded = false;
+	bool isSinking;
 
 	protected bool wasTrigger;
 	public virtual void disableCollider() {
@@ -46,8 +51,6 @@ public class Exploder : MonoBehaviour {
 	}
 	void Update()
 	{
-		
-
 	}
 	void FixedUpdate() {
 
@@ -70,6 +73,8 @@ public class Exploder : MonoBehaviour {
 
 	public virtual IEnumerator explode() {
 		Debug.Log ("Boom!");
+		DamageEnemiesInSphere ();
+		disappear ();
 
 		ExploderComponent[] components = GetComponents<ExploderComponent>(); 
 		foreach (ExploderComponent component in components) {
@@ -84,6 +89,20 @@ public class Exploder : MonoBehaviour {
 			}
 			enableCollider();
 			yield return new WaitForFixedUpdate();
+		}
+	}
+
+	public void DamageEnemiesInSphere()
+	{
+		RaycastHit[] rayColliders = Physics.SphereCastAll (transform.position, 10.0f, Vector3.up, hitLayers.value);
+		for (int i = 0; i < rayColliders.Length; i++) 
+		{
+			GameObject hitObject = rayColliders [i].collider.gameObject;
+			if (hitObject.GetComponent<EnemyHealth> ()) 
+			{
+				hitObject.GetComponent<EnemyHealth> ().TakeDamage (100, hitObject.transform.position);
+			}
+
 		}
 	}
 
@@ -112,5 +131,11 @@ public class Exploder : MonoBehaviour {
 
 	void Damage() {
 		
+	}
+	public void disappear () {
+		MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer> ();
+		for(int i = 0; i< renderers.Length; i++) {
+			renderers [i].enabled = false;
+		}
 	}
 }
