@@ -8,11 +8,8 @@ public class GrenadeThrow : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown ("g")) {
-			ThrowGrenade ();
-		}
 	}
-	void ThrowGrenade() {
+	public void ThrowGrenade() {
 		GameObject grenadethrow = Instantiate (grenade, transform.position, transform.rotation);
 			
 		grenadethrow.GetComponent<Exploder> ().init();

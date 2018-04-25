@@ -57,6 +57,7 @@ public class PlayerShooting : MonoBehaviour
 
 	void Shoot ()
 	{
+		
 		// Reset the timer.
 		timer = 0f;
 
