@@ -12,13 +12,14 @@ public class Exploder : MonoBehaviour {
 	public int probeCount = 150;
 	public float explodeDuration = 0.5f;
 	public float sinkSpeed = 2.5f;
-
+	public AudioSource grenadeAudio;
 	public LayerMask hitLayers;
 
 	private float timeTillExplosion;
 
 	protected bool exploded = false;
 	bool isSinking;
+
 
 	protected bool wasTrigger;
 	public virtual void disableCollider() {
@@ -34,7 +35,9 @@ public class Exploder : MonoBehaviour {
 		}
 	}
 
-	
+	public void awake () {
+		grenadeAudio = GetComponent<AudioSource> ();
+	}
 	public virtual void init() {
 		power *= 500000;
 		exploded = false;
@@ -72,10 +75,11 @@ public class Exploder : MonoBehaviour {
 	}
 
 	public virtual IEnumerator explode() {
+		grenadeAudio.Play ();
 		Debug.Log ("Boom!");
 		DamageEnemiesInSphere ();
 		disappear ();
-
+		grenadeAudio.Play ();
 		ExploderComponent[] components = GetComponents<ExploderComponent>(); 
 		foreach (ExploderComponent component in components) {
 			if (component.enabled) {

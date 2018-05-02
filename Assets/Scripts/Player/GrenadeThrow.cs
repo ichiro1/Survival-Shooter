@@ -5,9 +5,9 @@ using UnityEngine;
 public class GrenadeThrow : MonoBehaviour {
 	public float throwForce = 10f;
 	public GameObject grenade;
-
 	// Update is called once per frame
 	void Update () {
+		
 	}
 	public void ThrowGrenade() {
 		GameObject grenadethrow = Instantiate (grenade, transform.position, transform.rotation);
